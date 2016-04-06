@@ -24,7 +24,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //CONTACTS
-  public struct function listContacts( array _ids, numeric _start = "0", numeric _limit = "50", string _modifiedDate   ) {
+  public struct function listContacts( array _ids, numeric _start = "0", numeric _limit = "20", string _modifiedDate   ) {
 
     return apiCall( "/contacts", setupParams( arguments ), "get" );
   }
