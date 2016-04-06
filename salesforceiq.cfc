@@ -30,6 +30,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //LISTS
+  public struct function getList( required string listId ) {
+
+    return apiCall( "/lists/#trim( listId )#", setupParams( {} ), "get" );
+  }
+
   public struct function listLists( array _ids, numeric _start = "0", numeric _limit = "20" ) {
 
     return apiCall( "/lists", setupParams( arguments ), "get" );
