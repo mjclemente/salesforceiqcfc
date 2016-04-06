@@ -29,7 +29,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return apiCall( "/contacts", setupParams( arguments ), "get" );
   }
 
+  //LISTS
+  public struct function listLists( array _ids, numeric _start = "0", numeric _limit = "20" ) {
 
+    return apiCall( "/lists", setupParams( arguments ), "get" );
+  }
 
   // PRIVATE FUNCTIONS
   private struct function apiCall( required string path, array params = [ ], string method = "get" )  {
