@@ -17,10 +17,18 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return this;
   }
 
+  //ACCOUNTS
   public struct function listAccounts( array _ids, numeric _start = "0", numeric _limit = "50", string _modifiedDate   ) {
 
     return apiCall( "/accounts", setupParams( arguments ), "get" );
   }
+
+  //CONTACTS
+  public struct function listContacts( array _ids, numeric _start = "0", numeric _limit = "50", string _modifiedDate   ) {
+
+    return apiCall( "/contacts", setupParams( arguments ), "get" );
+  }
+
 
 
   // PRIVATE FUNCTIONS
