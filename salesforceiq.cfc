@@ -24,6 +24,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //CONTACTS
+  public struct function getContact( required string contactId ) {
+
+    return apiCall( "/contacts/#trim( contactId )#", setupParams( {} ), "get" );
+  }
+
   public struct function listContacts( array _ids, numeric _start = "0", numeric _limit = "20", string _modifiedDate   ) {
 
     return apiCall( "/contacts", setupParams( arguments ), "get" );
