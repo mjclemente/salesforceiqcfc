@@ -40,6 +40,12 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return apiCall( "/lists", setupParams( arguments ), "get" );
   }
 
+  //FIELDS
+  public struct function listAccountFields( ) {
+
+    return apiCall( "/accounts/fields", setupParams( {} ), "get" );
+  }
+
   // PRIVATE FUNCTIONS
   private struct function apiCall( required string path, array params = [ ], string method = "get" )  {
 
