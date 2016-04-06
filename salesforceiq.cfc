@@ -98,11 +98,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return http.send().getPrefix();
   }
 
-  private array function setupParams( required struct params ) {
+  private array function setupParams( required struct params, array prune = [] ) {
     var filteredParams = { };
     var paramKeys = structKeyArray( params );
     for ( var paramKey in paramKeys ) {
-      if ( structKeyExists( params, paramKey ) && !isNull( params[ paramKey ] ) ) {
+      if ( structKeyExists( params, paramKey ) && !isNull( params[ paramKey ] ) && !ArrayFindNoCase(prune, paramKey) ) {
         filteredParams[ paramKey ] = params[ paramKey ];
       }
     }
