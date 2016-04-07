@@ -7,8 +7,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.booleanFields = [  ];
   variables.arrayFields = [ "_ids" ];
   variables.fileFields = [  ];
-  variables.dictionaryFields = {
-    newAccount = { required = [ "name" ], optional = [ ] }
+  variables.dictionaryFields = {  };
+  variables.objectFields = {
+    newAccount = { required = [ "name" ], optional = [ ] },
+    newContact = { required = [ "properties" ], optional = [ ] },
+    newListItem = { required = [ "listId" ], optional = [ ] }
   };
 
   public any function init( required string apiKey, required string apiSecret, string baseUrl = "https://api.salesforceiq.com/v2", numeric httpTimeout = 60, boolean includeRaw = true ) {
