@@ -8,7 +8,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.arrayFields = [ "_ids" ];
   variables.fileFields = [  ];
   variables.dictionaryFields = {
-    o = { required = [ ], optional = [  ] }
+    newAccount = { required = [ "name" ], optional = [ ] }
   };
 
   public any function init( required string apiKey, required string apiSecret, string baseUrl = "https://api.salesforceiq.com/v2", numeric httpTimeout = 60, boolean includeRaw = true ) {
@@ -18,6 +18,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //ACCOUNTS
+  public struct function createAccount( required struct newAccount ) {
+
+    return apiCall( "/accounts", setupParams( arguments ), "post" );
+  }
+
   public struct function getAccount( required string accountId ) {
 
     return apiCall( "/accounts/#trim( accountId )#", setupParams( {} ), "get" );
