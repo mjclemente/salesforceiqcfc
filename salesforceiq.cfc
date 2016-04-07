@@ -18,6 +18,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //ACCOUNTS
+  public struct function getAccount( required string accountId ) {
+
+    return apiCall( "/accounts/#trim( accountId )#", setupParams( {} ), "get" );
+  }
+
   public struct function listAccounts( array _ids, numeric _start = "0", numeric _limit = "50", string _modifiedDate   ) {
 
     return apiCall( "/accounts", setupParams( arguments ), "get" );
