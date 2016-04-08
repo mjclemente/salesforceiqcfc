@@ -70,9 +70,8 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   public struct function listListItems( required string listId, array _ids, numeric _start = "0", numeric _limit = "20", string _modifiedDate ) {
-  	var params = arguments;
-  	params.delete("listid");
-    return apiCall( "/lists/#trim( listId )#/listitems", setupParams( params, ["listId"] ), "get" );
+
+    return apiCall( "/lists/#trim( listId )#/listitems", setupParams( arguments, ["listId"] ), "get" );
   }
 
   //FIELDS
