@@ -7,11 +7,14 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.booleanFields = [  ];
   variables.arrayFields = [ "_ids" ];
   variables.fileFields = [  ];
-  variables.dictionaryFields = {  };
+  variables.dictionaryFields = {
+  	newAccount = { required = [ "name" ], optional = [ ] },
+  	newContact = { required = [ "properties" ], optional = [ ] },
+    newListItem = { required = [ "listId" ], optional = [ ] },
+    properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] }
+  };
   variables.objectFields = {
-    newAccount = { required = [ "name" ], optional = [ ] },
-    newContact = { required = [ "properties" ], optional = [ ] },
-    newListItem = { required = [ "listId" ], optional = [ ] }
+
   };
 
   public any function init( required string apiKey, required string apiSecret, string baseUrl = "https://api.salesforceiq.com/v2", numeric httpTimeout = 60, boolean includeRaw = true ) {
@@ -89,6 +92,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     if ( variables.includeRaw ) {
       result[ "raw" ] = { "method" = ucase( method ), "path" = fullApiPath, "params" = serializeJSON( params ), "response" = apiResponse.fileContent };
     }
+
     structAppend(  result, deserializeJSON( apiResponse.fileContent ), true );
     parseResult( result );
     return result;
@@ -111,7 +115,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
           http.addParam( type = "formfield", name = lcase( param.name ), value = param.value );
         }
       } else if ( arrayFind( [ "get","delete" ], method ) ) {
-        arrayAppend( qs, lcase( param.name ) & "=" & encodeurl( param.value ) );
+        arrayAppend( qs, lcase( StructKeyList(param) ) & "=" & encodeurl( param[StructKeyList(param)] ) );
       }
 
     }
@@ -125,12 +129,15 @@ component output="false" displayname="SalesforceIQ.cfc"  {
 
   private array function setupParams( required struct params, array prune = [] ) {
     var filteredParams = { };
+    //gets the keys of the struct (argument names)
     var paramKeys = structKeyArray( params );
     for ( var paramKey in paramKeys ) {
       if ( structKeyExists( params, paramKey ) && !isNull( params[ paramKey ] ) && !ArrayFindNoCase(prune, paramKey) ) {
         filteredParams[ paramKey ] = params[ paramKey ];
       }
     }
+
+    //is this the point where I separate the objects from the other types of fields?
 
     return parseDictionary( filteredParams );
   }
@@ -149,24 +156,22 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     }
 
     for ( var key in dictionary ) {
-
       // confirm that key is a valid one based on variables.dictionaries
       if ( structFieldExists && !( arrayFindNoCase( variables.dictionaryFields[ name ].required, key ) || arrayFindNoCase( variables.dictionaryFields[ name ].optional, key ) ) ) {
         throwError( "'#name#' dictionary has invalid field: #key#" );
       }
 
-      var fullKey = len( root ) ? root & ':' & lcase( key ) : lcase( key );
       if ( isStruct( dictionary[ key ] ) ) {
-        for ( var item in parseDictionary( dictionary[ key ], key, fullKey ) ) {
+        for ( var item in parseDictionary( dictionary[ key ], key, lcase( key ) ) ) {
           arrayAppend( result, item );
         }
       } else if ( isArray( dictionary[ key ] ) ) {
-        for ( var item in parseArray( dictionary[ key ], key, fullKey ) ) {
+        for ( var item in parseArray( dictionary[ key ], key, lcase( key ) ) ) {
           arrayAppend( result, item );
         }
       } else {
         // note: for now, the validate param passed into getValidatedParam() is always true, but that can be modified, if necessary
-        arrayAppend( result, { name = fullKey, value = getValidatedParam( key, dictionary[ key ], true ) } );
+        arrayAppend( result, { "#lcase( key )#" = "#getValidatedParam( key, dictionary[ key ], true )#" } );
       }
 
     }
