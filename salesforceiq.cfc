@@ -37,6 +37,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //CONTACTS
+  public struct function createContact( required struct newContact ) {
+
+    return apiCall( "/contacts", setupParams( arguments ), "post" );
+  }
+
   public struct function getContact( required string contactId ) {
 
     return apiCall( "/contacts/#trim( contactId )#", setupParams( {} ), "get" );
