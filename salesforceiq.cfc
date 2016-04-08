@@ -166,22 +166,25 @@ component output="false" displayname="SalesforceIQ.cfc"  {
         throwError( "'#name#' dictionary has invalid field: #key#" );
       }
 
+      //key = newcontact
       if ( isStruct( dictionary[ key ] ) ) {
-        for ( var item in parseDictionary( dictionary[ key ], key ) ) {
-          structInsert( result, lcase(key), dictionary[ key ], true );
-          //arrayAppend( result, item );
+
+        for ( var item in dictionary[ key ] ) {
+        	return { "#key#" : parseDictionary( dictionary[ key ], key ) };
         }
+
       } else if ( isArray( dictionary[ key ] ) ) {
 
+      	structInsert( result, key, [] );
         for ( var item in parseArray( dictionary[ key ], key, name != 'properties' ) ) {
-          structInsert( result, lcase(key), dictionary[ key ] );
-          //arrayAppend( result, item );
+
+          arrayAppend(result[key], item );
+
         }
 
       } else {
         // note: for now, the validate param passed into getValidatedParam() is always true, but that can be modified, if necessary
-        structInsert( result, lcase( key ), getValidatedParam( key, dictionary[ key ], true ) );
-        //arrayAppend( result, { "#lcase( key )#" = "#getValidatedParam( key, dictionary[ key ], true )#" } );
+        structInsert( result, key, getValidatedParam( key, dictionary[ key ] ) );
       }
 
     }
@@ -191,7 +194,6 @@ component output="false" displayname="SalesforceIQ.cfc"  {
 
   private array function parseArray( required array list, string name = '', boolean validate = true ) {
     var result = [ ];
-    var index = 0;
     var arrayFieldExists = arrayFindNoCase( variables.arrayFields, name );
 
     if ( !arrayFieldExists && validate  ) {
@@ -200,13 +202,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
 
     for ( var item in list ) {
       if ( isStruct( item ) ) {
-        for ( var item in parseDictionary( item, '' ) ) {
-          arrayAppend( result, item );
-        }
-        ++index;
+          arrayAppend( result, parseDictionary( item, name ) );
+      } else if ( isArray( item ) ) {
+      	arrayAppend( result, parseArray( item, name ) );
       } else {
-      	structInsert( result, lcase( name ), getValidatedParam( name, item ) );
-        //arrayAppend( result, { name = name, value = getValidatedParam( name, item ) } );
+      	arrayAppend( result, getValidatedParam( name, item ) );
       }
     }
 
