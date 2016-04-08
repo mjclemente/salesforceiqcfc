@@ -13,9 +13,6 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     newListItem = { required = [ "listId" ], optional = [ ] },
     properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] }
   };
-  variables.objectFields = {
-
-  };
 
   public any function init( required string apiKey, required string apiSecret, string baseUrl = "https://api.salesforceiq.com/v2", numeric httpTimeout = 60, boolean includeRaw = true ) {
 
@@ -80,7 +77,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   // PRIVATE FUNCTIONS
-  private struct function apiCall( required string path, array params = [ ], string method = "get" )  {
+  private struct function apiCall( required string path, struct params = { }, string method = "get" )  {
 
     var fullApiPath = variables.baseUrl & path;
     var requestStart = getTickCount();
@@ -98,7 +95,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return result;
   }
 
-  private any function makeHttpRequest( required string urlPath, required array params, required string method ) {
+  private any function makeHttpRequest( required string urlPath, required struct params, required string method ) {
     var http = new http( url = urlPath, method = method, username = variables.apiKey, password = variables.apiSecret, timeout = variables.httpTimeout );
 
     // adding a user agent header so that Adobe ColdFusion doesn't get mad about empty HTTP posts
@@ -109,18 +106,18 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     for ( var param in params ) {
 
       if ( method == "post" ) {
-        if ( arraycontains( variables.fileFields , param.name ) ) {
-          http.addParam( type = "file", name = lcase( param.name ), file = param.value );
+        if ( arraycontains( variables.fileFields , param ) ) {
+          http.addParam( type = "file", name = lcase( param ), file = param[param] );
         }
       } else if ( arrayFind( [ "get","delete" ], method ) ) {
-        arrayAppend( qs, lcase( StructKeyList(param) ) & "=" & encodeurl( param[StructKeyList(param)] ) );
+        arrayAppend( qs, lcase( param ) & "=" & encodeurl( param[param] ) );
       }
 
     }
 
     if ( method == "post" ) {
     	http.addParam( type = "header", name = "Content-Type", value = "application/json" );
-    	http.addParam( type = "body", value = serializeJSON(params[1]) );
+    	http.addParam( type = "body", value = serializeJSON( params[structkeylist(params)] ) );
     }
 
     if ( arrayLen( qs ) ) {
@@ -130,7 +127,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return http.send().getPrefix();
   }
 
-  private array function setupParams( required struct params, array prune = [] ) {
+  private struct function setupParams( required struct params, array prune = [] ) {
     var filteredParams = { };
     //gets the keys of the struct (argument names)
     var paramKeys = structKeyArray( params );
@@ -145,8 +142,8 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return parseDictionary( filteredParams );
   }
 
-  private array function parseDictionary( required struct dictionary, string name = '', string root = '' ) {
-    var result = [ ];
+  private struct function parseDictionary( required struct dictionary, string name = '' ) {
+    var result = { };
     var structFieldExists = structKeyExists( variables.dictionaryFields, name );
 
     // validate required dictionary keys based on variables.dictionaries
@@ -165,16 +162,21 @@ component output="false" displayname="SalesforceIQ.cfc"  {
       }
 
       if ( isStruct( dictionary[ key ] ) ) {
-        for ( var item in parseDictionary( dictionary[ key ], key, lcase( key ) ) ) {
-          arrayAppend( result, item );
+        for ( var item in parseDictionary( dictionary[ key ], key ) ) {
+          structInsert( result, lcase(key), dictionary[ key ], true );
+          //arrayAppend( result, item );
         }
       } else if ( isArray( dictionary[ key ] ) ) {
-        for ( var item in parseArray( dictionary[ key ], key, lcase( key ) ) ) {
-          arrayAppend( result, item );
+
+        for ( var item in parseArray( dictionary[ key ], key, name != 'properties' ) ) {
+          structInsert( result, lcase(key), dictionary[ key ] );
+          //arrayAppend( result, item );
         }
+
       } else {
         // note: for now, the validate param passed into getValidatedParam() is always true, but that can be modified, if necessary
-        arrayAppend( result, { "#lcase( key )#" = "#getValidatedParam( key, dictionary[ key ], true )#" } );
+        structInsert( result, lcase( key ), getValidatedParam( key, dictionary[ key ], true ) );
+        //arrayAppend( result, { "#lcase( key )#" = "#getValidatedParam( key, dictionary[ key ], true )#" } );
       }
 
     }
@@ -182,25 +184,24 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return result;
   }
 
-  private array function parseArray( required array list, string name = '', string root = '' ) {
+  private array function parseArray( required array list, string name = '', boolean validate = true ) {
     var result = [ ];
     var index = 0;
     var arrayFieldExists = arrayFindNoCase( variables.arrayFields, name );
 
-    if ( !arrayFieldExists ) {
+    if ( !arrayFieldExists && validate  ) {
       throwError( "'#name#' is not an allowed list variable." );
     }
 
     for ( var item in list ) {
       if ( isStruct( item ) ) {
-        var fullKey = len( root ) ? root & "[" & index & "]" : name & "[" & index & "]";
-        for ( var item in parseDictionary( item, '', fullKey ) ) {
+        for ( var item in parseDictionary( item, '' ) ) {
           arrayAppend( result, item );
         }
         ++index;
       } else {
-        var fullKey = len( root ) ? root : name;
-        arrayAppend( result, { name = fullKey, value = getValidatedParam( name, item ) } );
+      	structInsert( result, lcase( name ), getValidatedParam( name, item ) );
+        //arrayAppend( result, { name = name, value = getValidatedParam( name, item ) } );
       }
     }
 
