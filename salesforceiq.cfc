@@ -115,7 +115,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
           http.addParam( type = "file", name = lcase( param ), file = param[param] );
         }
       } else if ( arrayFind( [ "get","delete" ], method ) ) {
-        arrayAppend( qs, lcase( param ) & "=" & encodeurl( param[param] ) );
+        arrayAppend( qs, lcase( param ) & "=" & encodeurl( params[param] ) );
       }
 
     }
