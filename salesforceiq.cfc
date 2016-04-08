@@ -111,13 +111,16 @@ component output="false" displayname="SalesforceIQ.cfc"  {
       if ( method == "post" ) {
         if ( arraycontains( variables.fileFields , param.name ) ) {
           http.addParam( type = "file", name = lcase( param.name ), file = param.value );
-        } else {
-          http.addParam( type = "formfield", name = lcase( param.name ), value = param.value );
         }
       } else if ( arrayFind( [ "get","delete" ], method ) ) {
         arrayAppend( qs, lcase( StructKeyList(param) ) & "=" & encodeurl( param[StructKeyList(param)] ) );
       }
 
+    }
+
+    if ( method == "post" ) {
+    	http.addParam( type = "header", name = "Content-Type", value = "application/json" );
+    	http.addParam( type = "body", value = serializeJSON(params[1]) );
     }
 
     if ( arrayLen( qs ) ) {
