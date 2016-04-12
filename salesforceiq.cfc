@@ -8,7 +8,8 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.arrayFields = [ "_ids", "contactIds" ];
   variables.fileFields = [  ];
   variables.dictionaryFields = {
-  	accountObject = { required = [ "name" ], optional = [ "id" ] },
+  	newAccount = { required = [ "name" ], optional = [ ] },
+    updatedAccount = { required = [ "id", "name" ], optional = [ ] },
   	contactObject = { required = [ "properties" ], optional = [ ] },
     listItemObject = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
     properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] },
@@ -43,12 +44,12 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //ACCOUNTS
-  public struct function createAccount( required struct accountObject ) {
+  public struct function createAccount( required struct newAccount ) {
 
     return apiCall( "/accounts", setupParams( arguments ), "post" );
   }
 
-  public struct function updateAccount( required string accountId, required struct accountObject ) {
+  public struct function updateAccount( required string accountId, required struct updatedAccount ) {
 
     return apiCall( "/accounts/#trim( accountId )#", setupParams( arguments, ["accountId"] ), "put" );
   }
