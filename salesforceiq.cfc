@@ -3,7 +3,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.utcBaseDate = dateAdd( "l", createDate( 1970,1,1 ).getTime() * -1, createDate( 1970,1,1 ) );
   variables.integerFields = [ "_start", "_limit" ];
   variables.numericFields = [  ];
-  variables.timestampFields = [ "_modifiedDate", "modifiedDate" ];
+  variables.timestampFields = [ "_modifiedDate", "modifiedDate", "createdDate" ];
   variables.booleanFields = [  ];
   variables.arrayFields = [ "_ids", "contactIds" ];
   variables.fileFields = [  ];
@@ -296,8 +296,10 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return dateDiff( "s", variables.utcBaseDate, (dateToConvert*1000) );
   }
 
-  private date function parseUTCTimestamp( required numeric utcTimestamp ) {
-    return dateAdd( "s", (utcTimestamp/1000), variables.utcBaseDate );
+  private date function parseUTCTimestamp( required any utcTimestamp ) {
+    //account for list field values returned within arrays
+    var dateToParse = isNumeric( utcTimestamp ) ? utcTimestamp : utcTimestamp[1].raw;
+    return dateAdd( "s", (dateToParse/1000), variables.utcBaseDate );
   }
 
   private boolean function isInteger( required any varToValidate ) {
