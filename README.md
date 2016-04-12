@@ -7,11 +7,11 @@ This project borrows heavily from the API framework built by [jcberquist](https:
 
 	salesforceiq = new path.to.salesforceiq( apiKey = 'xxx', apiSecret = 'xxx' );
 
-#Available Methods
+# Available Methods
 
 ***Note that for the create() methods, the structs passed in are case sensitive - use array notation when creating them.***
 
-####Accounts [https://api.salesforceiq.com/#/curl#documentation_accounts_account-object](https://api.salesforceiq.com/#/curl#documentation_accounts_account-object)
+#### Accounts [https://api.salesforceiq.com/#/curl#documentation_accounts_account-object](https://api.salesforceiq.com/#/curl#documentation_accounts_account-object)
 
 	createAccount( required struct newAccount )
 
@@ -19,7 +19,7 @@ This project borrows heavily from the API framework built by [jcberquist](https:
 
 	listAccounts( array _ids, numeric _start = "0", numeric _limit = "50", string _modifiedDate   )
 	
-####Contacts [https://api.salesforceiq.com/#/curl#documentation_contacts_contact-object](https://api.salesforceiq.com/#/curl#documentation_contacts_contact-object)
+#### Contacts [https://api.salesforceiq.com/#/curl#documentation_contacts_contact-object](https://api.salesforceiq.com/#/curl#documentation_contacts_contact-object)
 
 	createContact( required struct newContact )
 	  
@@ -27,19 +27,21 @@ This project borrows heavily from the API framework built by [jcberquist](https:
 
     listContacts( array _ids, numeric _start = "0", numeric _limit = "20", string _modifiedDate )
 
-####Lists [https://api.salesforceiq.com/#/curl#documentation_lists_list-object](https://api.salesforceiq.com/#/curl#documentation_lists_list-object)
+#### Lists [https://api.salesforceiq.com/#/curl#documentation_lists_list-object](https://api.salesforceiq.com/#/curl#documentation_lists_list-object)
 
 
 	getList( required string listId ) {
 
 	listLists( array _ids, numeric _start = "0", numeric _limit = "20" )
 	
-####List Items [https://api.salesforceiq.com/#/curl#documentation_lists_list-items](https://api.salesforceiq.com/#/curl#documentation_lists_list-items)
+#### List Items [https://api.salesforceiq.com/#/curl#documentation_lists_list-items](https://api.salesforceiq.com/#/curl#documentation_lists_list-items)
 
+	createListItem( required string listId, required struct newListItem )
+	
 	getListItem( required string listId, required string itemId )
 	
 	listListItems( required string listId, array _ids, numeric _start = "0", numeric _limit = "20", string _modifiedDate )
 
-####Fields [https://api.salesforceiq.com/#/curl#documentation_accounts_account-fields_account-field-object](https://api.salesforceiq.com/#/curl#documentation_accounts_account-fields_account-field-object)
+#### Fields [https://api.salesforceiq.com/#/curl#documentation_accounts_account-fields_account-field-object](https://api.salesforceiq.com/#/curl#documentation_accounts_account-fields_account-field-object)
 
 	listAccountFields( )
