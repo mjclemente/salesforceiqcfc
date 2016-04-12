@@ -48,6 +48,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return apiCall( "/accounts", setupParams( arguments ), "post" );
   }
 
+  public struct function updateAccount( required string accountId, required struct accountObject ) {
+
+    return apiCall( "/accounts/#trim( accountId )#", setupParams( arguments, ["accountId"] ), "put" );
+  }
+
   public struct function getAccount( required string accountId ) {
 
     return apiCall( "/accounts/#trim( accountId )#", setupParams( {} ), "get" );
