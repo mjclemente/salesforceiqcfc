@@ -18,6 +18,28 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   public any function init( required string apiKey, required string apiSecret, string baseUrl = "https://api.salesforceiq.com/v2", numeric httpTimeout = 60, boolean includeRaw = true ) {
 
     structAppend( variables, arguments );
+
+    var lists = listLists();
+
+    for ( var list in lists.objects ) {
+      for ( var field in list.fields ) {
+
+        if ( field.dataType == "Numeric" && !arrayFindNoCase( variables.numericFields, field.id ) ) {
+          arrayAppend(variables.numericFields, field.id);
+        } else if ( field.dataType == 'List' && !arrayFindNoCase( variables.arrayFields, field.id ) ) {
+          arrayAppend(variables.arrayFields, field.id);
+        } else if ( field.dataType == 'DateTime' && !arrayFindNoCase( variables.timestampFields, field.id ) ) {
+          arrayAppend(variables.timestampFields, field.id);
+        } else if ( field.dataType == 'File' && !arrayFindNoCase( variables.fileFields, field.id ) ) {
+          arrayAppend(variables.fileFields, field.id);
+        }
+
+        if ( !arrayFindNoCase( variables.dictionaryFields.fieldValues.optional, field.id ) ) {
+          arrayAppend(variables.dictionaryFields.fieldValues.optional, field.id);
+        }
+      }
+    }
+
     return this;
   }
 
