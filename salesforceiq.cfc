@@ -5,13 +5,14 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.numericFields = [  ];
   variables.timestampFields = [ "_modifiedDate", "modifiedDate" ];
   variables.booleanFields = [  ];
-  variables.arrayFields = [ "_ids" ];
+  variables.arrayFields = [ "_ids", "contactIds" ];
   variables.fileFields = [  ];
   variables.dictionaryFields = {
   	newAccount = { required = [ "name" ], optional = [ ] },
   	newContact = { required = [ "properties" ], optional = [ ] },
-    newListItem = { required = [ "listId" ], optional = [ ] },
-    properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] }
+    newListItem = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
+    properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] },
+    fieldValues = { required = [ ], optional = [  ] }
   };
 
   public any function init( required string apiKey, required string apiSecret, string baseUrl = "https://api.salesforceiq.com/v2", numeric httpTimeout = 60, boolean includeRaw = true ) {
@@ -106,7 +107,6 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     http.addParam( type = "header", name = "User-Agent", value = "salesforceIQ.cfc" );
 
     var qs = [ ];
-
     for ( var param in params ) {
 
       if ( method == "post" ) {
@@ -167,23 +167,17 @@ component output="false" displayname="SalesforceIQ.cfc"  {
 
       //key = newcontact
       if ( isStruct( dictionary[ key ] ) ) {
-
-        for ( var item in dictionary[ key ] ) {
-        	return { "#key#" : parseDictionary( dictionary[ key ], key ) };
-        }
-
+        structInsert(result, key, parseDictionary( dictionary[ key ], key ) );
       } else if ( isArray( dictionary[ key ] ) ) {
 
       	structInsert( result, key, [] );
-        for ( var item in parseArray( dictionary[ key ], key, name != 'properties' ) ) {
-
+        for ( var item in parseArray( dictionary[ key ], key, name != 'properties' && name != 'fieldValues' ) ) {
           arrayAppend(result[key], item );
-
         }
 
       } else {
         // note: for now, the validate param passed into getValidatedParam() is always true, but that can be modified, if necessary
-        structInsert( result, key, getValidatedParam( key, dictionary[ key ] ) );
+        	structInsert( result, key, getValidatedParam( key, dictionary[ key ] ) );
       }
 
     }
@@ -200,13 +194,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     }
 
     for ( var item in list ) {
-      if ( isStruct( item ) ) {
-          arrayAppend( result, parseDictionary( item, name ) );
-      } else if ( isArray( item ) ) {
-      	arrayAppend( result, parseArray( item, name ) );
-      } else {
-      	arrayAppend( result, getValidatedParam( name, item ) );
-      }
+        arrayAppend( result, parseDictionary( item, name ) );
     }
 
     return result;
