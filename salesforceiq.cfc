@@ -20,7 +20,6 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     structAppend( variables, arguments );
 
     var lists = listLists();
-
     for ( var list in lists.objects ) {
       for ( var field in list.fields ) {
 
@@ -134,6 +133,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     http.addParam( type = "header", name = "User-Agent", value = "salesforceIQ.cfc" );
 
     var qs = [ ];
+
     for ( var param in params ) {
 
       if ( method == "post" ) {
@@ -221,7 +221,13 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     }
 
     for ( var item in list ) {
+      if ( isStruct( item ) ) {
         arrayAppend( result, parseDictionary( item, name ) );
+      } else if ( isArray( item ) ) {
+        arrayAppend( result, parseArray( item, name ) );
+      } else {
+        arrayAppend( result, getValidatedParam( name, item ) );
+      }
     }
 
     return result;
