@@ -8,7 +8,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.arrayFields = [ "_ids", "contactIds" ];
   variables.fileFields = [  ];
   variables.dictionaryFields = {
-  	accountObject = { required = [ "name" ], optional = [ ] },
+  	accountObject = { required = [ "name" ], optional = [ "id" ] },
   	contactObject = { required = [ "properties" ], optional = [ ] },
     listItemObject = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
     properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] },
@@ -136,7 +136,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
 
     for ( var param in params ) {
 
-      if ( method == "post" ) {
+      if ( arrayFind( [ "post","put" ], method ) ) {
         if ( arraycontains( variables.fileFields , param ) ) {
           http.addParam( type = "file", name = lcase( param ), file = param[param] );
         }
@@ -146,7 +146,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
 
     }
 
-    if ( method == "post" ) {
+    if ( arrayFind( [ "post","put" ], method ) ) {
     	http.addParam( type = "header", name = "Content-Type", value = "application/json" );
     	http.addParam( type = "body", value = serializeJSON( params[structkeylist(params)] ) );
     }
