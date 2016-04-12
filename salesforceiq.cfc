@@ -87,6 +87,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //LIST ITEMS
+  public struct function createListItem( required string listId, required struct newListItem ) {
+
+    return apiCall( "/lists/#trim( listId )#/listitems", setupParams( arguments, ["listId"] ), "post" );
+  }
+
   public struct function getListItem( required string listId, required string itemId ) {
 
     return apiCall( "/lists/#trim( listId )#/listitems/#trim( itemId )#", setupParams( {} ), "get" );
