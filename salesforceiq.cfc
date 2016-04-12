@@ -8,9 +8,9 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   variables.arrayFields = [ "_ids", "contactIds" ];
   variables.fileFields = [  ];
   variables.dictionaryFields = {
-  	newAccount = { required = [ "name" ], optional = [ ] },
-  	newContact = { required = [ "properties" ], optional = [ ] },
-    newListItem = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
+  	accountObject = { required = [ "name" ], optional = [ ] },
+  	contactObject = { required = [ "properties" ], optional = [ ] },
+    listItemObject = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
     properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] },
     fieldValues = { required = [ ], optional = [  ] }
   };
@@ -43,7 +43,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //ACCOUNTS
-  public struct function createAccount( required struct newAccount ) {
+  public struct function createAccount( required struct accountObject ) {
 
     return apiCall( "/accounts", setupParams( arguments ), "post" );
   }
@@ -59,7 +59,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //CONTACTS
-  public struct function createContact( required struct newContact ) {
+  public struct function createContact( required struct contactObject ) {
 
     return apiCall( "/contacts", setupParams( arguments ), "post" );
   }
@@ -86,7 +86,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //LIST ITEMS
-  public struct function createListItem( required string listId, required struct newListItem ) {
+  public struct function createListItem( required string listId, required struct listItemObject ) {
 
     return apiCall( "/lists/#trim( listId )#/listitems", setupParams( arguments, ["listId"] ), "post" );
   }
