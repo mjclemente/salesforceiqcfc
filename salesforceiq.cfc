@@ -119,6 +119,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return apiCall( "/lists/#trim( listId )#/listitems/#trim( itemId )#", setupParams( {} ), "get" );
   }
 
+  public struct function deleteListItem( required string listId, required string itemId ) {
+
+    return apiCall( "/lists/#trim( listId )#/listitems/#trim( itemId )#", setupParams( {} ), "delete" );
+  }
+
   public struct function listListItems( required string listId, array _ids, numeric _start = "0", numeric _limit = "20", string _modifiedDate ) {
 
     return apiCall( "/lists/#trim( listId )#/listitems", setupParams( arguments, ["listId"] ), "get" );
@@ -144,7 +149,7 @@ component output="false" displayname="SalesforceIQ.cfc"  {
       result[ "raw" ] = { "method" = ucase( method ), "path" = fullApiPath, "params" = serializeJSON( params ), "response" = apiResponse.fileContent };
     }
 
-    structAppend(  result, deserializeJSON( apiResponse.fileContent ), true );
+    structAppend(  result, isBoolean( apiResponse.fileContent ) ? { "response" : apiResponse.fileContent } : deserializeJSON( apiResponse.fileContent ), true );
     parseResult( result );
     return result;
   }
