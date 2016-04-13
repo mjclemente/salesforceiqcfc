@@ -12,7 +12,8 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     updatedAccount = { required = [ "id", "name" ], optional = [ ] },
   	newContact = { required = [ "properties" ], optional = [ ] },
     updatedContact = { required = [ "id", "properties" ], optional = [ ] },
-    listItemObject = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
+    newListItem = { required = [ "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
+    updatedListItem = { required = [ "id", "listId" ], optional = [ "contactIds", "name", "fieldValues", "linkedItemIds" ] },
     properties = { required = [ "email" ], optional = [ "name", "phone", "address", "company", "title" ] },
     fieldValues = { required = [ ], optional = [  ] }
   };
@@ -103,9 +104,14 @@ component output="false" displayname="SalesforceIQ.cfc"  {
   }
 
   //LIST ITEMS
-  public struct function createListItem( required string listId, required struct listItemObject ) {
+  public struct function createListItem( required string listId, required struct newListItem ) {
 
     return apiCall( "/lists/#trim( listId )#/listitems", setupParams( arguments, ["listId"] ), "post" );
+  }
+
+  public struct function updateListItem( required string listId, required string itemId, required struct updatedListItem ) {
+
+    return apiCall( "/lists/#trim( listId )#/listitems/#trim( itemId )#", setupParams( arguments, ["listId", "itemId"] ), "put" );
   }
 
   public struct function getListItem( required string listId, required string itemId ) {
