@@ -71,6 +71,11 @@ component output="false" displayname="SalesforceIQ.cfc"  {
     return apiCall( "/contacts", setupParams( arguments ), "post" );
   }
 
+  public struct function upsertContact( required struct newContact ) {
+
+    return apiCall( "/contacts?_upsert=email", setupParams( arguments ), "post" );
+  }
+
   public struct function updateContact( required string contactId, required struct updatedContact ) {
 
     return apiCall( "/contacts/#trim( contactId )#", setupParams( arguments, ["contactId"] ), "put" );
